@@ -1,0 +1,410 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Roles: MENTEE | MENTOR | COORDINATOR | ADMIN | SUPER_ADMIN
+// Status: INVITED | ACTIVE | SUSPENDED | REMOVED
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  role             String    @default("MENTEE")
+  status           String    @default("INVITED")
+  timezone         String    @default("Africa/Lagos")
+  avatar           Int       @default(0)
+  level            String?
+  faculty          String?
+  studentId        String?
+  phone            String?
+  headline         String?
+  bio              String?
+  goalsText        String?
+  interests        String    @default("[]")
+  expertise        String    @default("[]")
+  languages        String    @default("[\"English\"]")
+  linkedin         String?
+  meetingPref      String?
+  capacity         Int       @default(3)
+  hoursPerMonth    Int       @default(4)
+  applicationNotes String?
+  source           String    @default("manual")
+  addedById        String?
+  invitedAt        DateTime?
+  inviteCount      Int       @default(0)
+  firstSignInAt    DateTime?
+  lastSeenAt       DateTime?
+  termsAcceptedAt  DateTime?
+  onboardedAt      DateTime?
+  trainingDoneAt   DateTime?
+  approvedAt       DateTime?
+  pausedUntil      DateTime?
+  emailPrefs       String    @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  memberships   Membership[]
+  menteeMatches Match[]            @relation("mentee")
+  mentorMatches Match[]            @relation("mentor")
+  availability  AvailabilityRule[]
+  notifications Notification[]
+  sessions      AuthSession[]
+  feedback      Feedback[]
+  attendance    Attendance[]
+  coordinates   Track[]            @relation("coordinator")
+}
+
+// Status: DRAFT | ONBOARDING | ACTIVE | COMPLETED | ARCHIVED
+model Cohort {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("DRAFT")
+  createdAt   DateTime @default(now())
+
+  memberships Membership[]
+  matches     Match[]
+  tracks      CohortTrack[]
+}
+
+// area: ACADEMIC | NON_ACADEMIC ; status: DRAFT | OPEN | CLOSED | ARCHIVED
+// assignmentMode: ADMIN | SUGGEST | PICK | REQUEST | RANK ; fallback: AUTO | QUEUE
+model Track {
+  id                  String    @id @default(cuid())
+  name                String    @unique
+  area                String    @default("NON_ACADEMIC")
+  description         String?
+  icon                String    @default("GraduationCap")
+  welcomeMessage      String?
+  status              String    @default("OPEN")
+  assignmentMode      String    @default("SUGGEST")
+  fallback            String    @default("QUEUE")
+  windowOpen          DateTime?
+  windowClose         DateTime?
+  maxMenteesPerMentor Int       @default(3)
+  showFullMentors     Boolean   @default(true)
+  sessionLengths      String    @default("[30,45,60]")
+  minSessions         Int       @default(4)
+  cancelWindowHours   Int       @default(24)
+  presentPct          Int       @default(70)
+  lateMinutes         Int       @default(10)
+  noShowMinutes       Int       @default(15)
+  heldOverlapMinutes  Int       @default(15)
+  modules             String    @default("{}")
+  coordinatorId       String?
+  coordinator         User?     @relation("coordinator", fields: [coordinatorId], references: [id])
+  createdAt           DateTime  @default(now())
+
+  memberships Membership[]
+  matches     Match[]
+  cohorts     CohortTrack[]
+}
+
+model CohortTrack {
+  cohortId String
+  trackId  String
+  cohort   Cohort @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  track    Track  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@id([cohortId, trackId])
+}
+
+// role: MENTEE | MENTOR ; status: ACTIVE | PAUSED | COMPLETED | REMOVED
+model Membership {
+  id        String   @id @default(cuid())
+  userId    String
+  cohortId  String
+  trackId   String
+  role      String
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cohort    Cohort   @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  track     Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cohortId, trackId])
+  @@index([cohortId, trackId, role])
+}
+
+// status: REQUESTED | SUGGESTED | ACTIVE | PAUSED | ENDED | DECLINED | EXPIRED
+model Match {
+  id          String    @id @default(cuid())
+  menteeId    String
+  mentorId    String
+  cohortId    String
+  trackId     String
+  status      String    @default("ACTIVE")
+  score       Int?
+  reasons     String    @default("[]")
+  note        String?
+  createdById String?
+  rhythm      String    @default("BIWEEKLY")
+  fixedMeetUrl String?
+  adminNotes  String?
+  endReason   String?
+  respondedAt DateTime?
+  startedAt   DateTime?
+  endedAt     DateTime?
+  createdAt   DateTime  @default(now())
+  mentee      User      @relation("mentee", fields: [menteeId], references: [id], onDelete: Cascade)
+  mentor      User      @relation("mentor", fields: [mentorId], references: [id], onDelete: Cascade)
+  cohort      Cohort    @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  track       Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  sessions    Session[]
+  actionItems ActionItem[]
+
+  @@index([menteeId, status])
+  @@index([mentorId, status])
+}
+
+model MentorRanking {
+  id       String @id @default(cuid())
+  menteeId String
+  mentorId String
+  cohortId String
+  trackId  String
+  rank     Int
+
+  @@unique([menteeId, cohortId, trackId, rank])
+}
+
+model Exclusion {
+  id       String   @id @default(cuid())
+  menteeId String
+  mentorId String
+  reason   String?
+  createdAt DateTime @default(now())
+
+  @@unique([menteeId, mentorId])
+}
+
+// Weekly window in the user's own time zone. weekday 0 = Sunday.
+model AvailabilityRule {
+  id       String @id @default(cuid())
+  userId   String
+  weekday  Int
+  startMin Int
+  endMin   Int
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// status: PROPOSED | CONFIRMED | CANCELLED | HELD | NO_SHOW_MENTEE | NO_SHOW_MENTOR | EXPIRED
+model Session {
+  id            String    @id @default(cuid())
+  matchId       String
+  startsAt      DateTime
+  endsAt        DateTime
+  durationMin   Int
+  status        String    @default("PROPOSED")
+  topic         String?
+  agenda        String?
+  joinUrl       String?
+  meetCode      String?
+  meetSpace     String?
+  linkSource    String?
+  proposedById  String
+  cancelReason  String?
+  cancelledById String?
+  lateCancel    Boolean   @default(false)
+  sharedNotes   String?
+  privateNotes  String?
+  notesUpdatedAt DateTime?
+  outcomeAt     DateTime?
+  createdAt     DateTime  @default(now())
+  match         Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  feedback      Feedback[]
+  joins         JoinEvent[]
+  attendance    Attendance[]
+  actionItems   ActionItem[]
+
+  @@index([matchId, startsAt])
+  @@index([status, startsAt])
+}
+
+model ActionItem {
+  id        String    @id @default(cuid())
+  matchId   String
+  sessionId String?
+  ownerId   String
+  text      String
+  dueDate   DateTime?
+  done      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  match     Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  session   Session?  @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+}
+
+model Feedback {
+  id           String   @id @default(cuid())
+  sessionId    String
+  authorId     String
+  usefulness   Int
+  preparedness Int
+  connection   Int
+  comment      String?
+  flagged      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  session      Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, authorId])
+}
+
+model JoinEvent {
+  id        String   @id @default(cuid())
+  sessionId String
+  userId    String
+  at        DateTime @default(now())
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+// status: PRESENT | LATE | LEFT_EARLY | ABSENT ; source: JOIN_CLICK | MANUAL | MEET | OVERRIDE
+model Attendance {
+  id             String   @id @default(cuid())
+  sessionId      String
+  userId         String
+  status         String
+  minutes        Int?
+  joinedAt       DateTime?
+  source         String   @default("JOIN_CLICK")
+  overrideReason String?
+  overriddenById String?
+  updatedAt      DateTime @updatedAt
+  session        Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+}
+
+// status: OPEN | IN_REVIEW | RESOLVED ; severity: LOW | MEDIUM | HIGH
+model SafetyCase {
+  id         String     @id @default(cuid())
+  reporterId String
+  subjectId  String?
+  matchId    String?
+  category   String
+  details    String
+  anonymous  Boolean    @default(false)
+  severity   String     @default("MEDIUM")
+  status     String     @default("OPEN")
+  outcome    String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  notes      CaseNote[]
+}
+
+model CaseNote {
+  id        String     @id @default(cuid())
+  caseId    String
+  authorId  String
+  body      String
+  createdAt DateTime   @default(now())
+  case      SafetyCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+}
+
+// status: SENT | LOGGED | FAILED
+model EmailMessage {
+  id        String    @id @default(cuid())
+  to        String
+  subject   String
+  body      String
+  type      String
+  status    String    @default("LOGGED")
+  error     String?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+
+  @@index([createdAt])
+}
+
+model ReminderRule {
+  key      String  @id
+  label    String
+  audience String
+  enabled  Boolean @default(true)
+  offsets  String  @default("[]")
+  inApp    Boolean @default(true)
+  email    Boolean @default(true)
+  subject  String
+  body     String
+}
+
+// One row per reminder already delivered, so nothing is sent twice.
+model ReminderLog {
+  key    String   @id
+  sentAt DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorName String?
+  action    String
+  target    String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model OtpChallenge {
+  id        String    @id @default(cuid())
+  email     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int       @default(0)
+  usedAt    DateTime?
+  ip        String?
+  createdAt DateTime  @default(now())
+
+  @@index([email, createdAt])
+}
+
+model AuthSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Consent {
+  id      String   @id @default(cuid())
+  userId  String
+  type    String
+  version String
+  at      DateTime @default(now())
+}
