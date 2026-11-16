@@ -12,7 +12,11 @@
     "db:seed": "tsx prisma/seed.ts",
     "setup": "prisma db push && tsx prisma/seed.ts",
     "tick": "tsx scripts/tick.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "DATABASE_URL=file:./test.db sh -c \"prisma db push --skip-generate --accept-data-loss >/dev/null && tsx prisma/seed.ts >/dev/null && tsx --test tests/integration/*.test.ts\"",
+    "test:e2e": "playwright test --trace off"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -35,6 +39,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/turbopack": "4.3.3",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.2",

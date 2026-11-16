@@ -43,3 +43,5 @@ next-env.d.ts
 !.env.example
 *.db
 *.db-journal
+test-results/
+playwright-report/

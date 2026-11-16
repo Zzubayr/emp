@@ -100,9 +100,19 @@ and call `GET /api/cron/tick?key=$CRON_SECRET` every minute or two from a schedu
   background checks and mentor training quizzes, quiet hours and daily digests.
 - Phase 2 and 3 modules: goals, help desk, messaging, resources, surveys, certificates, AI features.
 - An editable roles matrix (roles are fixed; see **Settings → Roles**).
-- Automated tests. The flows were verified by hand in a browser; there is no test suite yet.
 
 Have your institution review the terms, privacy notice and safeguarding process (`/legal`) before launch.
+
+## Tests
+
+```bash
+npm test
+```
+
+Runs three layers: unit tests for time zones, slot maths, CSV and health scoring; integration tests for the
+reminder engine against a seeded test database; and Playwright browser tests for sign-in security, access
+control, assignment (single, bulk, rank and allocate), feedback, reschedule and cancel, and safety cases.
+The browser tests use their own database (`prisma/test.db`) and never touch your data.
 
 ## Project layout
 
