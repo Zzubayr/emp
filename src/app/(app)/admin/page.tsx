@@ -106,7 +106,7 @@ export default async function AdminDashboard() {
               return (
                 <li key={label}>
                   <div className="mb-1 flex justify-between text-sm"><span>{label}</span><span className="text-muted-foreground tabular-nums">{n}<span className="text-xs"> / {total}</span></span></div>
-                  <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-linear-to-r from-indigo-500 to-violet-500" style={{ width: `${pct(n, total)}%` }} /></div>
+                  <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-navy dark:bg-cyan" style={{ width: `${pct(n, total)}%` }} /></div>
                 </li>
               );
             })}

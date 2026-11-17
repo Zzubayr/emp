@@ -36,7 +36,7 @@ export function SideNav({ items }: { items: NavItem[] }) {
     <nav aria-label="Main" className="flex-1 space-y-5 overflow-y-auto px-3 py-2">
       {groups.map((g) => (
         <div key={g}>
-          {g && <div className="mb-1.5 px-3 font-medium text-[11px] text-muted-foreground/80 uppercase tracking-wider">{g}</div>}
+          {g && <div className="mb-1.5 px-3 font-semibold text-[10.5px] text-white/45 uppercase tracking-[0.16em]">{g}</div>}
           <ul className="space-y-0.5">
             {items.filter((i) => (i.group ?? "") === g).map((i) => {
               const Icon = ICONS[i.icon] ?? Home;
@@ -46,15 +46,15 @@ export function SideNav({ items }: { items: NavItem[] }) {
                   <Link
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group relative flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm transition-colors duration-150",
-                      active ? "bg-brand-soft font-medium text-brand" : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                      "group relative flex h-9 items-center gap-2.5 rounded-md px-3 text-sm transition-colors duration-150",
+                      active ? "bg-white/10 font-medium text-white" : "text-white/65 hover:bg-white/5 hover:text-white",
                     )}
                     href={i.href}
                   >
-                    {active && <span className="-translate-y-1/2 absolute top-1/2 left-0 h-4 w-0.5 rounded-full bg-brand" />}
+                    {active && <span className="-translate-y-1/2 absolute top-1/2 left-0 h-5 w-[3px] bg-cyan" />}
                     <Icon className="size-4 shrink-0" />
                     <span className="flex-1 truncate">{i.label}</span>
-                    {i.badge ? <span className="rounded-full bg-brand px-1.5 py-px font-semibold text-[10px] text-primary-foreground tabular-nums">{i.badge}</span> : null}
+                    {i.badge ? <span className="rounded-full bg-cyan px-1.5 py-px font-semibold text-[10px] text-navy tabular-nums">{i.badge}</span> : null}
                   </Link>
                 </li>
               );
@@ -76,10 +76,11 @@ export function BottomTabs({ items }: { items: NavItem[] }) {
           const active = isActive(path, i.href);
           return (
             <li className="flex-1" key={i.href}>
-              <Link aria-current={active ? "page" : undefined} className={cn("relative flex h-14 flex-col items-center justify-center gap-0.5 text-[11px]", active ? "font-medium text-brand" : "text-muted-foreground")} href={i.href}>
+              <Link aria-current={active ? "page" : undefined} className={cn("relative flex h-14 flex-col items-center justify-center gap-0.5 text-[11px]", active ? "font-semibold text-navy dark:text-cyan" : "text-muted-foreground")} href={i.href}>
+                {active && <span className="absolute top-0 h-[3px] w-8 bg-cyan" />}
                 <Icon className="size-5" />
                 <span className="max-w-full truncate px-1">{i.label}</span>
-                {i.badge ? <span className="absolute top-1.5 left-[55%] size-2 rounded-full bg-brand" /> : null}
+                {i.badge ? <span className="absolute top-2 left-[55%] size-2 rounded-full bg-cyan ring-2 ring-background" /> : null}
               </Link>
             </li>
           );
@@ -160,10 +161,10 @@ export function CohortSwitcher({ cohorts, current }: { cohorts: { id: string; na
   if (!cohorts.length) return null;
   return (
     <label className="mx-3 mb-2 block">
-      <span className="mb-1 block px-1 font-medium text-[11px] text-muted-foreground/80 uppercase tracking-wider">Cohort</span>
+      <span className="mb-1.5 block px-1 font-semibold text-[10.5px] text-white/45 uppercase tracking-[0.16em]">Cohort</span>
       <select
         aria-label="Cohort"
-        className={cn("h-9 w-full rounded-lg border bg-card px-2.5 font-medium text-sm shadow-xs outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50", pending && "opacity-60")}
+        className={cn("h-9 w-full rounded-md border border-white/15 bg-white/5 px-2.5 font-medium text-sm text-white outline-none focus-visible:ring-2 focus-visible:ring-cyan [&>option]:text-navy", pending && "opacity-60")}
         onChange={(e) => start(async () => {
           await switchCohort(e.target.value);
           router.refresh();

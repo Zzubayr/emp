@@ -58,24 +58,24 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[256px_1fr]">
-      <a className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground" href="#main">Skip to content</a>
-      <aside className="sticky top-0 hidden h-dvh flex-col border-r bg-sidebar lg:flex">
+      <a className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-navy focus:px-3 focus:py-2 focus:text-primary-foreground" href="#main">Skip to content</a>
+      <aside className="sticky top-0 hidden h-dvh flex-col bg-navy text-white lg:flex dark:border-white/5 dark:border-r">
         <div className="flex h-16 items-center px-5">
-          <Link href={staff ? "/admin" : "/home"}><Logo name={s.shortName} /></Link>
+          <Link href={staff ? "/admin" : "/home"}><Logo inverse name={s.shortName} /></Link>
         </div>
         {staff && <CohortSwitcher cohorts={cohorts.map((c) => ({ id: c.id, name: c.name, status: c.status }))} current={cohort?.id} />}
         <SideNav items={nav} />
         {s.modules.safety && (
           <div className="p-3">
-            <Link className="flex items-center gap-2.5 rounded-xl border border-dashed p-3 text-muted-foreground text-xs transition-colors hover:border-rose-400/60 hover:text-foreground" href="/report">
-              <ShieldAlert className="size-4 shrink-0 text-rose-500" />
-              <span>Something not right? <span className="font-medium text-foreground">Report a concern</span></span>
+            <Link className="flex items-center gap-2.5 rounded-md border border-white/15 p-3 text-white/65 text-xs transition-colors hover:border-white/30 hover:text-white" href="/report">
+              <ShieldAlert className="size-4 shrink-0 text-cyan" />
+              <span>Something not right? <span className="font-medium text-white">Report a concern</span></span>
             </Link>
           </div>
         )}
       </aside>
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-lg sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 sm:px-6">
           <Link className="lg:hidden" href={staff ? "/admin" : "/home"}><Logo compact name={s.shortName} /></Link>
           <div className="flex flex-1 justify-end md:justify-start"><CommandMenu items={nav} /></div>
           {s.modules.safety && (
@@ -85,7 +85,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           )}
           <Link aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`} className="relative flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" href="/notifications">
             <Bell className="size-[18px]" />
-            {unread > 0 && <span className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-full bg-brand px-1 font-semibold text-[10px] text-primary-foreground">{unread > 9 ? "9+" : unread}</span>}
+            {unread > 0 && <span className="absolute top-1 right-1 flex min-w-4 items-center justify-center rounded-full bg-cyan px-1 font-bold text-[10px] text-navy">{unread > 9 ? "9+" : unread}</span>}
           </Link>
           <div className="hidden sm:block">
             <UserMenu user={{ id: user.id, name: user.name, email: user.email, role: ROLE_LABEL[user.role] }} />

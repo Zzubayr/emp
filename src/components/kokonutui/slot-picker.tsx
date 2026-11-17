@@ -216,7 +216,7 @@ function DayStrip({
           <button
             aria-pressed={i === active}
             className={cn(
-              "relative flex flex-col items-center rounded-2xl py-2 outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-zinc-400 disabled:cursor-not-allowed",
+              "relative flex flex-col items-center rounded-md py-2 outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#3ed9d9] disabled:cursor-not-allowed",
               i !== active && "hover:bg-zinc-50 dark:hover:bg-zinc-900"
             )}
             disabled={full}
@@ -226,7 +226,7 @@ function DayStrip({
           >
             {i === active && (
               <motion.span
-                className="absolute inset-0 rounded-2xl border border-zinc-900 dark:border-zinc-100"
+                className="absolute inset-0 rounded-md border-2 border-[#3ed9d9]"
                 layoutId={layoutId}
                 transition={spring}
               />
@@ -239,7 +239,7 @@ function DayStrip({
                 "font-semibold text-lg tabular-nums leading-tight",
                 full
                   ? "text-zinc-300 dark:text-zinc-700"
-                  : "text-zinc-900 dark:text-zinc-100"
+                  : "text-foreground"
               )}
             >
               {date.getUTCDate()}
@@ -348,10 +348,10 @@ function ConfirmBar({
       </div>
       <button
         className={cn(
-          "flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 font-medium text-xs outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-zinc-950",
+          "flex h-9 shrink-0 items-center gap-1.5 rounded-md px-3.5 font-medium text-xs outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#3ed9d9] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40 dark:focus-visible:ring-offset-zinc-950",
           booked
             ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950"
-            : "bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+            : "bg-primary text-primary-foreground hover:opacity-90"
         )}
         disabled={start === null}
         onClick={onConfirm}
@@ -524,16 +524,16 @@ export default function SlotPicker({
   return (
     <div
       className={cn(
-        "w-full max-w-sm rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950",
+        "w-full max-w-sm rounded-lg border bg-card p-5 text-foreground",
         className
       )}
     >
       <div className="flex items-center gap-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sky-100 font-medium text-sky-700 text-xs dark:bg-sky-500/15 dark:text-sky-300">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#e3f8f8] font-medium text-[#182346] text-xs dark:bg-[#3ed9d9]/15 dark:text-[#3ed9d9]">
           {initials}
         </span>
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="truncate font-medium text-sm text-zinc-900 dark:text-zinc-100">
+          <p className="truncate font-medium text-sm text-foreground">
             {host.title}
           </p>
           <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
@@ -547,9 +547,9 @@ export default function SlotPicker({
           <button
             aria-pressed={d === minutes}
             className={cn(
-              "relative z-10 h-8 flex-1 rounded-full font-medium text-xs tabular-nums outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-zinc-400",
+              "relative z-10 h-8 flex-1 rounded-full font-medium text-xs tabular-nums outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#3ed9d9]",
               d === minutes
-                ? "text-zinc-900 dark:text-zinc-50"
+                ? "text-foreground"
                 : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
             )}
             key={d}
@@ -610,7 +610,7 @@ export default function SlotPicker({
           {start === null && (
             <button
               aria-label={`${day ? longDate(day.date) : "Day"}: no time picked. Press Enter to place a ${lengthLabel(minutes)} meeting in the first free gap.`}
-              className="pointer-events-none absolute inset-0 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+              className="pointer-events-none absolute inset-0 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#3ed9d9]"
               onClick={placeFirst}
               type="button"
             />
@@ -639,10 +639,10 @@ export default function SlotPicker({
 
           {ghost !== null && start !== ghost && (
             <div
-              className="pointer-events-none absolute inset-x-0 rounded-lg border border-sky-400 border-dashed bg-sky-50/60 dark:border-sky-500/60 dark:bg-sky-500/10"
+              className="pointer-events-none absolute inset-x-0 rounded-lg border border-[#3ed9d9] border-dashed bg-[#e3f8f8]/60 dark:border-[#3ed9d9]/60 dark:bg-[#3ed9d9]/10"
               style={{ top: (ghost - from) * PX, height: minutes * PX }}
             >
-              <span className="absolute top-1 left-2 font-medium text-[10px] text-sky-700 tabular-nums leading-3 dark:text-sky-300">
+              <span className="absolute top-1 left-2 font-medium text-[10px] text-[#182346] tabular-nums leading-3 dark:text-[#3ed9d9]">
                 {range(ghost, minutes)}
               </span>
             </div>
@@ -659,10 +659,10 @@ export default function SlotPicker({
               <button
                 aria-label={`${longDate(day?.date ?? "")}, ${range(start, minutes)}. Arrow keys move it.`}
                 className={cn(
-                  "flex h-full w-full items-start gap-1 overflow-hidden rounded-lg px-2 py-1 text-left font-medium text-[11px] tabular-nums leading-4 outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950",
+                  "flex h-full w-full items-start gap-1 overflow-hidden rounded-lg px-2 py-1 text-left font-medium text-[11px] tabular-nums leading-4 outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#3ed9d9] focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-950",
                   booked
                     ? "bg-emerald-600 text-white dark:bg-emerald-500 dark:text-emerald-950"
-                    : "bg-sky-600 text-white shadow-[0_1px_2px_rgb(2_132_199/0.3)] dark:bg-sky-500 dark:text-sky-950",
+                    : "bg-[#182346] text-white dark:bg-[#3ed9d9] dark:text-[#0b1120]",
                   !(booked || dragging) && "cursor-grab"
                 )}
                 onKeyDown={onKey}

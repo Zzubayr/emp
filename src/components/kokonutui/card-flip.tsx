@@ -469,7 +469,7 @@ export default function CardFlip({
       aria-roledescription="flip card"
       className={cn(
         "group/flick relative aspect-[7/10] w-[260px] select-none rounded-2xl outline-hidden [perspective:1100px]",
-        "focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-4 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950",
+        "focus-visible:ring-2 focus-visible:ring-[#3ed9d9] focus-visible:ring-offset-4 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-950",
         axis === "y" ? "touch-pan-y" : "touch-pan-x",
         className
       )}

@@ -43,39 +43,38 @@ export default async function HomePage() {
     <div className="space-y-6">
       <div className="animate-fade-up">
         <p className="text-muted-foreground text-sm">{fmtDay(now, user.timezone, { year: true })}</p>
-        <h1 className="mt-1 font-semibold text-3xl">{greet}, {user.name.split(" ")[0]}</h1>
+        <h1 className="mt-1 font-bold text-[26px] tracking-tight sm:text-3xl">{greet}, {user.name.split(" ")[0]}</h1>
       </div>
 
       {/* The one clear next action */}
-      <section className="relative animate-fade-up overflow-hidden rounded-3xl bg-linear-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 text-white shadow-[0_20px_50px_-20px_rgb(99_102_241/0.7)] sm:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_0%,rgb(255_255_255/0.22),transparent_45%)]" />
+      <section className="relative animate-fade-up overflow-hidden rounded-lg border-cyan border-l-4 bg-navy p-6 text-white sm:p-8 dark:border dark:border-white/10 dark:border-l-4 dark:border-l-cyan">
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           {next ? (
             <>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm text-white/75"><Clock className="size-4" /> Next session · {relTime(next.startsAt, now)}</div>
-                <div className="mt-2 font-semibold text-2xl tracking-tight">{fmtDateTime(next.startsAt, user.timezone)}</div>
+                <div className="flex items-center gap-2 font-semibold text-[11px] text-cyan uppercase tracking-[0.14em]"><Clock className="size-3.5" /> Next session · {relTime(next.startsAt, now)}</div>
+                <div className="mt-2 font-bold text-xl tracking-tight sm:text-2xl">{fmtDateTime(next.startsAt, user.timezone)}</div>
                 <div className="mt-3 flex items-center gap-2.5">
-                  <UserAvatar className="ring-white/30" user={otherOf(next.match, user.id)} />
+                  <UserAvatar className="ring-navy" user={otherOf(next.match, user.id)} />
                   <div className="min-w-0 text-sm"><div className="truncate font-medium">{otherOf(next.match, user.id).name}</div><div className="truncate text-white/70">{next.topic || next.match.track.name} · {next.durationMin} min</div></div>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <JoinButton className="bg-white text-indigo-700 shadow-none hover:bg-white/90 aria-disabled:bg-white/15 aria-disabled:text-white/90" endsAt={next.endsAt.toISOString()} hasLink={Boolean(next.joinUrl)} sessionId={next.id} startsAt={next.startsAt.toISOString()} />
-                <Link className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-white/30 px-4 font-medium text-sm transition-colors hover:bg-white/10" href={`/sessions/${next.id}`}>Details <ArrowRight className="size-4" /></Link>
+                <JoinButton className="aria-disabled:bg-white/10 aria-disabled:text-white/80" endsAt={next.endsAt.toISOString()} hasLink={Boolean(next.joinUrl)} sessionId={next.id} startsAt={next.startsAt.toISOString()} />
+                <Link className="inline-flex h-10 items-center gap-1.5 rounded-md border border-white/30 px-4 font-semibold text-sm transition-colors hover:bg-white/10" href={`/sessions/${next.id}`}>Details <ArrowRight className="size-4" /></Link>
               </div>
             </>
           ) : pairs.some((p) => p.status === "ACTIVE") ? (
             <>
-              <div><div className="font-semibold text-2xl tracking-tight">Nothing booked yet</div><p className="mt-1 text-white/75">Pick a time that works for you both. It takes under a minute.</p></div>
-              <Link className="inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 font-medium text-indigo-700 transition-[scale] hover:bg-white/90 active:scale-[0.97]" href={`/sessions/book?pair=${pairs.find((p) => p.status === "ACTIVE")!.id}`}><CalendarPlus className="size-4" /> Book a session</Link>
+              <div><div className="font-bold text-xl tracking-tight sm:text-2xl">Nothing booked yet</div><p className="mt-1 text-white/75">Pick a time that works for you both. It takes under a minute.</p></div>
+              <Link className="inline-flex h-11 items-center gap-2 rounded-md bg-cyan px-5 font-semibold text-navy transition-[opacity,scale] hover:opacity-90 active:scale-[0.97]" href={`/sessions/book?pair=${pairs.find((p) => p.status === "ACTIVE")!.id}`}><CalendarPlus className="size-4" /> Book a session</Link>
             </>
           ) : mentor ? (
-            <div><div className="font-semibold text-2xl tracking-tight">You are all set</div><p className="mt-1 text-white/75">{requests.length ? "You have requests waiting for a reply." : `We will let you know as soon as a ${s.labelMentee.toLowerCase()} is paired with you.`}</p></div>
+            <div><div className="font-bold text-xl tracking-tight sm:text-2xl">You are all set</div><p className="mt-1 text-white/75">{requests.length ? "You have requests waiting for a reply." : `We will let you know as soon as a ${s.labelMentee.toLowerCase()} is paired with you.`}</p></div>
           ) : (
             <>
-              <div><div className="font-semibold text-2xl tracking-tight">Let's find your {s.labelMentor.toLowerCase()}</div><p className="mt-1 text-white/75">See where things stand for each of your tracks.</p></div>
-              <Link className="inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 font-medium text-indigo-700 transition-[scale] hover:bg-white/90 active:scale-[0.97]" href="/mentor"><HeartHandshake className="size-4" /> Go to my {s.labelMentor.toLowerCase()}</Link>
+              <div><div className="font-bold text-xl tracking-tight sm:text-2xl">Let's find your {s.labelMentor.toLowerCase()}</div><p className="mt-1 text-white/75">See where things stand for each of your tracks.</p></div>
+              <Link className="inline-flex h-11 items-center gap-2 rounded-md bg-cyan px-5 font-semibold text-navy transition-[opacity,scale] hover:opacity-90 active:scale-[0.97]" href="/mentor"><HeartHandshake className="size-4" /> Go to my {s.labelMentor.toLowerCase()}</Link>
             </>
           )}
         </div>
@@ -147,7 +146,7 @@ export default async function HomePage() {
           <Panel title="First-session ideas">
             <ul className="space-y-2.5 text-muted-foreground text-sm">
               {["What made you choose your course, and what surprised you?", "What is one thing you would like to be better at by the end of term?", "What does a good week look like for you?"].map((q) => (
-                <li className="flex gap-2" key={q}><Sparkles className="mt-0.5 size-4 shrink-0 text-brand" />{q}</li>
+                <li className="flex gap-2.5" key={q}><span className="cyan-dot mt-1.5" />{q}</li>
               ))}
             </ul>
           </Panel>
@@ -161,7 +160,7 @@ function Todo({ href, icon: Icon, title, sub }: { href: string; icon: typeof Inb
   return (
     <li>
       <Link className="group flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-accent/50" href={href}>
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"><Icon className="size-4" /></span>
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-md border bg-background text-navy dark:text-cyan"><Icon className="size-4" /></span>
         <div className="min-w-0 flex-1"><div className="truncate font-medium text-sm">{title}</div><div className="truncate text-muted-foreground text-xs">{sub}</div></div>
         <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </Link>

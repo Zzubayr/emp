@@ -1,4 +1,4 @@
-# EMP · EMSS Mentorship Platform
+# EMSS Mentorship Programme
 
 One place to run a university mentorship program: onboard cohorts, pair mentors and mentees across
 academic and non-academic tracks, book sessions, send reminders, record attendance, collect feedback
@@ -124,3 +124,10 @@ src/app/(app)/           signed-in screens; admin console under admin/
 src/components/kokonutui Kokonut UI components (vendored)
 src/components/app       shared app components
 ```
+
+## Brand
+
+Follows the EMSS 25/26 Figma: navy `#182346`, cyan `#3ED9D9`, the MSSN crest (`public/brand/`), the
+navy title box with a cyan outline, cyan dot bullets and the navy footer bar. The licensed brand fonts
+(Tomato Grotesk, Monument Extended) are stood in for by Hanken Grotesk and Unbounded, with Allura for the
+"Presents" script. To use the real fonts, add the files and switch `src/app/layout.tsx` to `next/font/local`.

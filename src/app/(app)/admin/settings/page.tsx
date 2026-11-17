@@ -55,6 +55,10 @@ export default async function Settings({ searchParams }: { searchParams: Promise
               <Field hint="Also emailed on every safety report." label="Safeguarding lead email"><Input defaultValue={s.safeguardingEmail} name="safeguardingEmail" type="email" /></Field>
               <Field hint="For newly added people; each person can change theirs." label="Default time zone"><NativeSelect defaultValue={s.defaultTimezone} name="defaultTimezone">{TIMEZONES.map((z) => <option key={z}>{z}</option>)}</NativeSelect></Field>
               <Field label="Tagline"><Input defaultValue={s.tagline} name="tagline" /></Field>
+              <Field label="Society name"><Input defaultValue={s.society} name="society" /></Field>
+              <Field hint="Shown under the society name." label="Affiliation"><Input defaultValue={s.parentOrg} name="parentOrg" /></Field>
+              <Field label="Instagram handle"><Input defaultValue={s.instagram} name="instagram" /></Field>
+              <Field label="LinkedIn handle"><Input defaultValue={s.linkedin} name="linkedin" /></Field>
             </div>
           </Panel>
           <Panel title="Program rules">
@@ -87,7 +91,7 @@ export default async function Settings({ searchParams }: { searchParams: Promise
             </Panel>
           </ActionForm>
           <ActionForm action={saveOrgSettings}>
-            {(["orgName", "shortName", "tagline", "supportEmail", "safeguardingEmail", "defaultTimezone", "minNoticeHours", "maxOpenRequests", "requestExpiryDays", "sessionDays", "adminSessionDays", "retentionYears"] as const).map((k) => <input key={k} name={k} type="hidden" value={String(s[k])} />)}
+            {(["orgName", "shortName", "tagline", "society", "parentOrg", "instagram", "linkedin", "supportEmail", "safeguardingEmail", "defaultTimezone", "minNoticeHours", "maxOpenRequests", "requestExpiryDays", "sessionDays", "adminSessionDays", "retentionYears"] as const).map((k) => <input key={k} name={k} type="hidden" value={String(s[k])} />)}
             {s.requireMentorApproval && <input name="requireMentorApproval" type="hidden" value="on" />}
             <Panel action={<Submit>Save labels</Submit>} description="Used in navigation and headings, for example call mentors Coaches." title="Words used in the app">
               <div className="grid gap-4 sm:grid-cols-2">

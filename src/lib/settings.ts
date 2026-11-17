@@ -2,9 +2,13 @@ import { cache } from "react";
 import { db } from "./db";
 
 export const DEFAULT_SETTINGS = {
-  orgName: "EMSS Mentorship Platform",
-  shortName: "EMP",
-  tagline: "One home for every mentor and mentee.",
+  orgName: "EMSS Mentorship Programme",
+  shortName: "EMSS",
+  society: "Engineering Muslim Students' Society (EMSS)",
+  parentOrg: "An organ of MSSN Unilag Branch",
+  tagline: "Guidance from those who have walked the path before you.",
+  instagram: "emss_unilag",
+  linkedin: "emss_unilag",
   supportEmail: "mentorship@emss.example",
   safeguardingEmail: "",
   defaultTimezone: "Africa/Lagos",

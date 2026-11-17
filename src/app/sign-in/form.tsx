@@ -54,7 +54,7 @@ export function SignInForm({ initialEmail, supportEmail, dev, demo }: { initialE
         <button className="mb-6 inline-flex items-center gap-1.5 text-muted-foreground text-sm hover:text-foreground" onClick={() => setStep("email")} type="button">
           <ArrowLeft className="size-4" /> Use a different email
         </button>
-        <h1 className="font-semibold text-2xl">Check your email</h1>
+        <h1 className="font-bold text-2xl tracking-tight">Check your email</h1>
         <p className="mt-2 text-muted-foreground text-sm">
           If <span className="font-medium text-foreground">{email}</span> is on the list, we sent a 6-digit code. It expires in 10 minutes.
         </p>
@@ -95,7 +95,7 @@ export function SignInForm({ initialEmail, supportEmail, dev, demo }: { initialE
 
   return (
     <div className="animate-fade-up">
-      <h1 className="font-semibold text-2xl">Welcome back</h1>
+      <h1 className="font-bold text-2xl tracking-tight">Welcome back</h1>
       <p className="mt-2 text-muted-foreground text-sm">Enter the email your invitation was sent to. We will email you a one-time code. No password needed.</p>
       <form className="mt-6 space-y-4" onSubmit={(e) => { e.preventDefault(); send(); }}>
         <label className="block space-y-1.5">

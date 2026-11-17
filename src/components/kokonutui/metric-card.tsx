@@ -37,8 +37,8 @@ const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 // Swatches for the breakdown, darkest first.
 const SWATCHES = [
-  "bg-zinc-900 dark:bg-zinc-100",
-  "bg-zinc-400 dark:bg-zinc-500",
+  "bg-[#182346] dark:bg-[#3ed9d9]",
+  "bg-[#3ed9d9] dark:bg-zinc-500",
   "bg-zinc-200 dark:bg-zinc-700",
   "bg-zinc-300 dark:bg-zinc-600",
 ];
@@ -371,7 +371,7 @@ function Breakdown({
                 }
                 aria-pressed={focus === i}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-sm outline-none transition-[background-color,opacity] duration-150 ease-out hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:hover:bg-zinc-900",
+                  "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-sm outline-none transition-[background-color,opacity] duration-150 ease-out hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-[#3ed9d9] dark:hover:bg-zinc-900",
                   focus === i &&
                     "bg-zinc-100 hover:bg-zinc-100 dark:bg-zinc-900",
                   focus !== null && focus !== i && "opacity-50"
@@ -624,7 +624,7 @@ export default function MetricCard({
   return (
     <div
       className={cn(
-        "w-full max-w-md select-none rounded-3xl border border-zinc-200 bg-white p-5 text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100",
+        "w-full max-w-md select-none rounded-lg border bg-card p-5 text-foreground",
         className
       )}
     >
@@ -632,7 +632,7 @@ export default function MetricCard({
         <p className="truncate text-sm text-zinc-500 dark:text-zinc-400">
           {label}
           {focus !== null && (
-            <span className="text-zinc-900 dark:text-zinc-100">
+            <span className="text-foreground">
               {" "}
               · {segments[focus]}
             </span>
@@ -649,9 +649,9 @@ export default function MetricCard({
             <button
               aria-pressed={days === period}
               className={cn(
-                "relative w-10 rounded-full py-1 font-medium tabular-nums outline-none transition-colors duration-200 ease-out focus-visible:ring-2 focus-visible:ring-zinc-400",
+                "relative w-10 rounded-full py-1 font-medium tabular-nums outline-none transition-colors duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#3ed9d9]",
                 days === period
-                  ? "text-zinc-900 dark:text-zinc-50"
+                  ? "text-foreground"
                   : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
               )}
               key={days}
@@ -685,7 +685,7 @@ export default function MetricCard({
         >
           {caption}
           {event && (
-            <span className="text-orange-600 dark:text-orange-400">
+            <span className="text-[#0e7c86] dark:text-[#0e7c86]">
               {" "}
               · {event.label}
             </span>
@@ -693,7 +693,7 @@ export default function MetricCard({
         </span>
         {ranged && (
           <button
-            className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs text-zinc-500 outline-none transition-colors duration-150 ease-out hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+            className="ml-auto shrink-0 rounded-full px-2 py-0.5 text-xs text-zinc-500 outline-none transition-colors duration-150 ease-out hover:bg-zinc-100 hover:text-zinc-900 focus-visible:ring-2 focus-visible:ring-[#3ed9d9] dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
             onClick={clearRead}
             type="button"
           >
@@ -708,7 +708,7 @@ export default function MetricCard({
         aria-valuemin={1}
         aria-valuenow={span ? span.hi + 1 : info.current.length}
         aria-valuetext={valueText}
-        className="relative mt-5 h-32 cursor-crosshair touch-pan-y rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-4 dark:focus-visible:ring-offset-zinc-950"
+        className="relative mt-5 h-32 cursor-crosshair touch-pan-y rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[#3ed9d9] focus-visible:ring-offset-4 dark:focus-visible:ring-offset-zinc-950"
         onBlur={() => setCursor(null)}
         onKeyDown={handleKeyDown}
         onLostPointerCapture={release}
@@ -759,13 +759,13 @@ export default function MetricCard({
           />
           {/* The area only fills the part being read. */}
           <path
-            className="fill-zinc-900/[0.05] dark:fill-zinc-100/[0.06]"
+            className="fill-[#3ed9d9]/[0.12] dark:fill-[#3ed9d9]/[0.08]"
             clipPath={`url(#${clipId})`}
             d={toArea(info.paths.current)}
             ref={areaRef}
           />
           <path
-            className="fill-none stroke-zinc-900/25 dark:stroke-zinc-100/25"
+            className="fill-none stroke-[#182346]/25 dark:stroke-[#3ed9d9]/30"
             d={info.paths.current}
             ref={currentDimRef}
             strokeLinecap="round"
@@ -773,7 +773,7 @@ export default function MetricCard({
             vectorEffect="non-scaling-stroke"
           />
           <path
-            className="fill-none stroke-zinc-900 dark:stroke-zinc-100"
+            className="fill-none stroke-[#182346] dark:stroke-[#3ed9d9]"
             clipPath={`url(#${clipId})`}
             d={info.paths.current}
             ref={currentRef}
@@ -790,8 +790,8 @@ export default function MetricCard({
             key={e.date}
             style={{ left: `${pct(e.at)}%` }}
           >
-            <div className="absolute inset-y-0 left-0 border-orange-500/30 border-l border-dashed dark:border-orange-400/30" />
-            <div className="absolute bottom-0 left-1/2 size-1.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-orange-500 ring-2 ring-white dark:bg-orange-400 dark:ring-zinc-950" />
+            <div className="absolute inset-y-0 left-0 border-[#0e7c86]/30 border-l border-dashed dark:border-[#0e7c86]/30" />
+            <div className="absolute bottom-0 left-1/2 size-1.5 -translate-x-1/2 translate-y-1/2 rounded-full bg-[#0e7c86] ring-2 ring-white dark:bg-[#0e7c86] dark:ring-zinc-950" />
           </div>
         ))}
 
@@ -816,7 +816,7 @@ export default function MetricCard({
             {twin && (
               <div
                 aria-hidden
-                className="pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-zinc-300 bg-white dark:border-zinc-600 dark:bg-zinc-950"
+                className="pointer-events-none absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-zinc-300 bg-white dark:border-zinc-600 dark:bg-card"
                 style={{
                   left: `${pct(span.lo)}%`,
                   top: `${(yOf(info.norm(info.before[span.lo])) / H) * 100}%`,

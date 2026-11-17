@@ -72,7 +72,7 @@ export default async function CohortDetail({ params }: { params: Promise<{ id: s
             {([["Invited", funnel.mentees.invited, funnel.mentees.invited], ["Signed in", funnel.mentees.signedIn, funnel.mentees.invited], ["Profile done", funnel.mentees.onboarded, funnel.mentees.invited], ["Paired", funnel.mentees.paired, funnel.mentees.seats], ["First session held", funnel.mentees.met, funnel.mentees.seats]] as const).map(([l, n, of]) => (
               <li key={l}>
                 <div className="mb-1 flex justify-between text-sm"><span>{l}</span><span className="text-muted-foreground tabular-nums">{n} / {of}</span></div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-linear-to-r from-indigo-500 to-violet-500" style={{ width: `${pct(n, of)}%` }} /></div>
+                <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-navy dark:bg-cyan" style={{ width: `${pct(n, of)}%` }} /></div>
               </li>
             ))}
           </ol>

@@ -4,7 +4,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { AVATAR_GRADIENTS } from "@/lib/constants";
+import { AVATAR_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export function UserAvatar({ user, size = "md", className }: { user: { name: string; avatar?: number }; size?: "sm" | "md" | "lg" | "xl"; className?: string }) {
@@ -13,7 +13,7 @@ export function UserAvatar({ user, size = "md", className }: { user: { name: str
   return (
     <span
       aria-hidden
-      className={cn("inline-flex shrink-0 items-center justify-center rounded-full bg-linear-to-br font-semibold text-white shadow-sm ring-2 ring-background", AVATAR_GRADIENTS[(user.avatar ?? 0) % AVATAR_GRADIENTS.length], sizes[size], className)}
+      className={cn("inline-flex shrink-0 items-center justify-center rounded-full font-semibold ring-2 ring-background", AVATAR_COLORS[(user.avatar ?? 0) % AVATAR_COLORS.length].cls, sizes[size], className)}
     >
       {initials || "?"}
     </span>
@@ -24,8 +24,9 @@ const tones = {
   green: "bg-emerald-500/10 text-emerald-700 ring-emerald-600/20 dark:text-emerald-300",
   amber: "bg-amber-500/10 text-amber-700 ring-amber-600/20 dark:text-amber-300",
   red: "bg-rose-500/10 text-rose-700 ring-rose-600/20 dark:text-rose-300",
-  blue: "bg-sky-500/10 text-sky-700 ring-sky-600/20 dark:text-sky-300",
-  violet: "bg-violet-500/10 text-violet-700 ring-violet-600/20 dark:text-violet-300",
+  blue: "bg-cyan/15 text-[#0b6a72] ring-cyan/50 dark:text-cyan",
+  navy: "bg-navy/8 text-navy ring-navy/20 dark:bg-white/10 dark:text-white dark:ring-white/20",
+  cyan: "bg-cyan/15 text-[#0b6a72] ring-cyan/50 dark:text-cyan",
   gray: "bg-zinc-500/10 text-zinc-600 ring-zinc-500/20 dark:text-zinc-300",
 };
 
@@ -37,12 +38,12 @@ const STATUS: Record<string, { label: string; tone: keyof typeof tones; icon: Lu
   REMOVED: { label: "Removed", tone: "gray", icon: Ban },
   DRAFT: { label: "Draft", tone: "gray", icon: CircleDashed },
   ONBOARDING: { label: "Onboarding", tone: "blue", icon: CircleDot },
-  COMPLETED: { label: "Completed", tone: "violet", icon: CheckCircle2 },
+  COMPLETED: { label: "Completed", tone: "navy", icon: CheckCircle2 },
   ARCHIVED: { label: "Archived", tone: "gray", icon: Ban },
   OPEN: { label: "Open", tone: "green", icon: CircleDot },
   CLOSED: { label: "Closed", tone: "gray", icon: XCircle },
   REQUESTED: { label: "Requested", tone: "blue", icon: Hourglass },
-  SUGGESTED: { label: "Suggested", tone: "violet", icon: CircleDot },
+  SUGGESTED: { label: "Suggested", tone: "navy", icon: CircleDot },
   PAUSED: { label: "Paused", tone: "amber", icon: PauseCircle },
   ENDED: { label: "Ended", tone: "gray", icon: XCircle },
   DECLINED: { label: "Declined", tone: "red", icon: XCircle },
@@ -89,8 +90,8 @@ export function PageHeader({ title, description, actions, eyebrow }: { title: Re
   return (
     <div className="mb-6 flex animate-fade-up flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        {eyebrow && <div className="mb-1.5 font-medium text-brand text-xs uppercase tracking-wider">{eyebrow}</div>}
-        <h1 className="font-semibold text-2xl sm:text-[28px]">{title}</h1>
+        {eyebrow && <div className="mb-2 flex items-center gap-2 font-semibold text-[11px] text-muted-foreground uppercase tracking-[0.14em]"><span className="h-0.5 w-5 bg-cyan" />{eyebrow}</div>}
+        <h1 className="font-bold text-[22px] tracking-tight sm:text-[26px]">{title}</h1>
         {description && <p className="mt-1 max-w-2xl text-muted-foreground text-sm">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -104,7 +105,7 @@ export function Panel({ title, description, action, children, className, bodyCla
       {(title || action) && (
         <header className="flex items-start justify-between gap-3 border-b px-5 py-4">
           <div className="min-w-0">
-            <h2 className="font-semibold text-[15px]">{title}</h2>
+            <h2 className="font-semibold text-[15px] text-foreground">{title}</h2>
             {description && <p className="mt-0.5 text-muted-foreground text-xs">{description}</p>}
           </div>
           {action}
@@ -116,16 +117,17 @@ export function Panel({ title, description, action, children, className, bodyCla
 }
 
 export function Stat({ label, value, hint, icon: Icon, tone = "brand", href }: { label: string; value: ReactNode; hint?: ReactNode; icon: LucideIcon; tone?: "brand" | "green" | "amber" | "red" | "blue"; href?: string }) {
-  const t = { brand: "bg-brand-soft text-brand", green: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400", amber: "bg-amber-500/10 text-amber-600 dark:text-amber-400", red: "bg-rose-500/10 text-rose-600 dark:text-rose-400", blue: "bg-sky-500/10 text-sky-600 dark:text-sky-400" }[tone];
+  const t = { brand: "text-navy dark:text-cyan", green: "text-emerald-600 dark:text-emerald-400", amber: "text-amber-600 dark:text-amber-400", red: "text-rose-600 dark:text-rose-400", blue: "text-[#2f5d8c] dark:text-[#7fa9d6]" }[tone];
   const body = (
-    <div className={cn("surface group flex h-full items-start justify-between gap-2 p-4 sm:p-5 transition-[translate,box-shadow] duration-200", href && "hover:-translate-y-0.5 hover:shadow-lg")}>
+    <div className={cn("surface group relative flex h-full items-start justify-between gap-2 overflow-hidden p-4 transition-colors duration-150 sm:p-5", href && "hover:border-navy/30 dark:hover:border-cyan/40")}>
+      <span aria-hidden className="absolute inset-y-0 left-0 w-[3px] bg-cyan opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
       <div>
         <div className="text-muted-foreground text-xs">{label}</div>
-        <div className="mt-1.5 font-semibold text-2xl tabular-nums sm:text-3xl tracking-tight">{value}</div>
+        <div className="mt-2 font-bold text-2xl tabular-nums tracking-tight sm:text-[28px]">{value}</div>
         {hint && <div className="mt-1 text-muted-foreground text-xs">{hint}</div>}
       </div>
-      <span className={cn("hidden size-9 shrink-0 items-center justify-center rounded-xl min-[400px]:flex", t)}>
-        <Icon className="size-[18px]" />
+      <span className={cn("hidden size-8 shrink-0 items-center justify-center rounded-md border bg-background min-[400px]:flex", t)}>
+        <Icon className="size-4" />
       </span>
     </div>
   );
@@ -135,12 +137,9 @@ export function Stat({ label, value, hint, icon: Icon, tone = "brand", href }: {
 export function Empty({ icon: Icon, title, description, action }: { icon: LucideIcon; title: string; description?: string; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="relative mb-4">
-        <div className="absolute inset-0 rounded-full bg-brand/20 blur-xl" />
-        <span className="relative flex size-14 items-center justify-center rounded-2xl border bg-card text-brand shadow-sm">
-          <Icon className="size-6" />
-        </span>
-      </div>
+      <span className="mb-4 flex size-12 items-center justify-center rounded-full border-2 border-cyan/60 bg-brand-soft text-navy dark:text-cyan">
+        <Icon className="size-5" />
+      </span>
       <h3 className="font-semibold">{title}</h3>
       {description && <p className="mt-1 max-w-sm text-muted-foreground text-sm">{description}</p>}
       {action && <div className="mt-4">{action}</div>}

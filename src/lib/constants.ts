@@ -54,10 +54,16 @@ export const RHYTHMS: Record<string, { label: string; perMonth: number }> = {
   MONTHLY: { label: "Monthly", perMonth: 1 },
 };
 
-export const AVATAR_GRADIENTS = [
-  "from-indigo-500 to-violet-500", "from-sky-500 to-indigo-500", "from-emerald-500 to-teal-500",
-  "from-amber-500 to-orange-500", "from-rose-500 to-pink-500", "from-fuchsia-500 to-purple-500",
-  "from-cyan-500 to-blue-500", "from-lime-500 to-emerald-500",
+/** Flat avatar colours, all from the EMSS navy/cyan family plus a few muted partners. */
+export const AVATAR_COLORS = [
+  { name: "Navy", cls: "bg-[#182346] text-white" },
+  { name: "Cyan", cls: "bg-[#3ED9D9] text-[#182346]" },
+  { name: "Teal", cls: "bg-[#0E7C86] text-white" },
+  { name: "Slate", cls: "bg-[#4A5573] text-white" },
+  { name: "Ocean", cls: "bg-[#2F5D8C] text-white" },
+  { name: "Mist", cls: "bg-[#C9EEF0] text-[#182346]" },
+  { name: "Ink", cls: "bg-[#0B1120] text-white" },
+  { name: "Sand", cls: "bg-[#E7DFCF] text-[#182346]" },
 ];
 
 export const TERMS_VERSION = "2026-11";

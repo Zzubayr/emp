@@ -24,9 +24,9 @@ const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
 function render(subject: string, body: string, cta?: { label: string; href: string }) {
   const paras = esc(body).split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px;line-height:1.6">${p.replace(/\n/g, "<br>")}</p>`).join("");
   const button = cta
-    ? `<p style="margin:22px 0"><a href="${cta.href}" style="background:#4f46e5;color:#fff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:600;display:inline-block">${esc(cta.label)}</a></p>`
+    ? `<p style="margin:22px 0"><a href="${cta.href}" style="background:#182346;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-weight:600;border:2px solid #3ed9d9;display:inline-block">${esc(cta.label)}</a></p>`
     : "";
-  return `<div style="background:#f5f5f8;padding:32px 16px;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1b29"><div style="max-width:520px;margin:0 auto;background:#fff;border-radius:16px;padding:32px;border:1px solid #e8e8ef"><div style="font-weight:700;font-size:14px;color:#4f46e5;margin-bottom:18px">EMP · Mentorship</div><h1 style="font-size:20px;margin:0 0 16px">${esc(subject)}</h1>${paras}${button}<p style="margin:24px 0 0;font-size:12px;color:#8a8a99">You are receiving this because you are part of the mentorship program.</p></div></div>`;
+  return `<div style="background:#f5f6f8;padding:32px 16px;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#182346"><div style="max-width:520px;margin:0 auto;background:#fff;border-radius:8px;border:1px solid #e1e4eb;overflow:hidden"><div style="background:#182346;color:#fff;padding:18px 32px;font-weight:700;font-size:14px;letter-spacing:.02em;border-bottom:3px solid #3ed9d9">EMSS MENTORSHIP</div><div style="padding:32px"><h1 style="font-size:20px;margin:0 0 16px">${esc(subject)}</h1>${paras}${button}<p style="margin:24px 0 0;font-size:12px;color:#5b6278">You are receiving this because you are part of the EMSS Mentorship Programme.</p></div></div></div>`;
 }
 
 /** Sends an email if SMTP is configured; always writes it to the outbox for the admin log. */

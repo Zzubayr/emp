@@ -11,7 +11,7 @@ import { AvailabilityEditor, type Rule, TagPicker } from "@/components/app/input
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { AVATAR_GRADIENTS, FACULTIES, INTEREST_TAGS, LANGUAGES, LEVELS, TIMEZONES } from "@/lib/constants";
+import { AVATAR_COLORS, FACULTIES, INTEREST_TAGS, LANGUAGES, LEVELS, TIMEZONES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type U = {
@@ -126,8 +126,8 @@ export function Wizard({ user, tracks, availability, orgName }: { user: U; track
           <div className="mt-5">
             <div className="mb-2 font-medium text-sm">Pick a colour for your avatar</div>
             <div className="flex flex-wrap gap-2">
-              {AVATAR_GRADIENTS.map((g, i) => (
-                <button aria-label={`Avatar colour ${i + 1}`} aria-pressed={avatar === i} className={cn("size-10 rounded-full bg-linear-to-br ring-offset-2 ring-offset-background transition-[scale,box-shadow] hover:scale-110", g, avatar === i && "ring-2 ring-brand")} key={g} onClick={() => setAvatar(i)} type="button" />
+              {AVATAR_COLORS.map((c, i) => (
+                <button aria-label={`Avatar colour: ${c.name}`} aria-pressed={avatar === i} className={cn("size-10 rounded-full ring-offset-2 ring-offset-background transition-[box-shadow] hover:ring-2 hover:ring-border", c.cls, avatar === i && "ring-2 ring-cyan hover:ring-cyan")} key={c.name} onClick={() => setAvatar(i)} type="button" />
               ))}
             </div>
           </div>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { requireReady } from "@/lib/auth";
-import { AVATAR_GRADIENTS, FACULTIES, INTEREST_TAGS, LANGUAGES, LEVELS, parseList, ROLE_LABEL, TIMEZONES } from "@/lib/constants";
+import { AVATAR_COLORS, FACULTIES, INTEREST_TAGS, LANGUAGES, LEVELS, parseList, ROLE_LABEL, TIMEZONES } from "@/lib/constants";
 import { db } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
 
@@ -40,7 +40,7 @@ export default async function Account() {
               </>
             )}
             <Field label="Avatar colour">
-              <NativeSelect defaultValue={user.avatar} name="avatar">{AVATAR_GRADIENTS.map((_, i) => <option key={i} value={i}>{["Indigo", "Sky", "Emerald", "Amber", "Rose", "Fuchsia", "Cyan", "Lime"][i]}</option>)}</NativeSelect>
+              <NativeSelect defaultValue={user.avatar} name="avatar">{AVATAR_COLORS.map((c, i) => <option key={c.name} value={i}>{c.name}</option>)}</NativeSelect>
             </Field>
           </div>
           <div className="mt-5"><div className="mb-2 font-medium text-sm">Languages</div><TagPicker defaultValue={parseList(user.languages)} max={5} name="languages" options={LANGUAGES} /></div>

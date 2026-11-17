@@ -28,13 +28,18 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --color-sidebar: var(--sidebar);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--ff-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--ff-display), var(--ff-body), sans-serif;
+  --font-script: var(--ff-script), cursive;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-cyan: var(--cyan);
+  --color-navy: var(--navy);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 6px);
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
   --animate-cursor: cursor 1s ease-in-out infinite;
 
@@ -61,58 +66,61 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.992 0.002 280);
-  --foreground: oklch(0.2 0.02 280);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 280);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.02 280);
-  --primary: oklch(0.49 0.22 278);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.965 0.006 280);
-  --secondary-foreground: oklch(0.25 0.02 280);
-  --muted: oklch(0.968 0.005 280);
-  --muted-foreground: oklch(0.5 0.02 280);
-  --accent: oklch(0.96 0.012 280);
-  --accent-foreground: oklch(0.25 0.03 280);
-  --destructive: oklch(0.58 0.22 25);
-  --border: oklch(0.925 0.006 280);
-  --input: oklch(0.905 0.008 280);
-  --ring: oklch(0.6 0.18 278);
-  --brand: oklch(0.49 0.22 278);
-  --brand-soft: oklch(0.955 0.03 280);
-  --success: oklch(0.55 0.14 155);
-  --warning: oklch(0.62 0.15 65);
-  --info: oklch(0.55 0.15 240);
-  --sidebar: oklch(0.982 0.004 280);
+  /* EMSS brand: navy #182346, cyan #3ED9D9 (from the EMSS 25/26 Figma) */
+  --navy: #182346;
+  --cyan: #3ed9d9;
+  --radius: 0.5rem;
+  --background: #f5f6f8;
+  --foreground: #182346;
+  --card: #ffffff;
+  --card-foreground: #182346;
+  --popover: #ffffff;
+  --popover-foreground: #182346;
+  --primary: #182346;
+  --primary-foreground: #ffffff;
+  --secondary: #eceef3;
+  --secondary-foreground: #182346;
+  --muted: #eef0f4;
+  --muted-foreground: #5b6278;
+  --accent: #eef0f4;
+  --accent-foreground: #182346;
+  --destructive: #c8312b;
+  --border: #e1e4eb;
+  --input: #d5d9e3;
+  --ring: #3ed9d9;
+  --brand: #182346;
+  --brand-soft: #e3f8f8;
+  --success: #1f8a5b;
+  --warning: #b7791f;
+  --info: #2f5d8c;
+  --sidebar: #ffffff;
 }
 
 .dark {
-  --background: oklch(0.155 0.012 280);
-  --foreground: oklch(0.96 0.005 280);
-  --card: oklch(0.195 0.014 280);
-  --card-foreground: oklch(0.96 0.005 280);
-  --popover: oklch(0.205 0.015 280);
-  --popover-foreground: oklch(0.96 0.005 280);
-  --primary: oklch(0.68 0.17 280);
-  --primary-foreground: oklch(0.14 0.02 280);
-  --secondary: oklch(0.25 0.015 280);
-  --secondary-foreground: oklch(0.96 0.005 280);
-  --muted: oklch(0.24 0.014 280);
-  --muted-foreground: oklch(0.7 0.02 280);
-  --accent: oklch(0.27 0.02 280);
-  --accent-foreground: oklch(0.96 0.005 280);
-  --destructive: oklch(0.68 0.19 22);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.68 0.17 280);
-  --brand: oklch(0.72 0.16 280);
-  --brand-soft: oklch(0.27 0.05 280);
-  --success: oklch(0.74 0.15 155);
-  --warning: oklch(0.8 0.14 75);
-  --info: oklch(0.74 0.12 240);
-  --sidebar: oklch(0.175 0.013 280);
+  --background: #0b1120;
+  --foreground: #eef1f7;
+  --card: #121a2e;
+  --card-foreground: #eef1f7;
+  --popover: #141d33;
+  --popover-foreground: #eef1f7;
+  --primary: #3ed9d9;
+  --primary-foreground: #0b1120;
+  --secondary: #1c2640;
+  --secondary-foreground: #eef1f7;
+  --muted: #18213a;
+  --muted-foreground: #9aa3ba;
+  --accent: #1c2640;
+  --accent-foreground: #eef1f7;
+  --destructive: #f2665f;
+  --border: #222c46;
+  --input: #2a3552;
+  --ring: #3ed9d9;
+  --brand: #3ed9d9;
+  --brand-soft: rgb(62 217 217 / 0.12);
+  --success: #4cc38a;
+  --warning: #e2b04a;
+  --info: #7fa9d6;
+  --sidebar: #0e1527;
 }
 
 @layer base {
@@ -124,12 +132,15 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv11", "ss01";
+  
   }
   h1,
   h2,
   h3 {
     @apply tracking-tight;
+  }
+  ::selection {
+    background: rgb(62 217 217 / 0.35);
   }
   /* Grid and flex children may shrink, so long names truncate instead of widening the page. */
   main :where(.grid, .flex) > * {
@@ -142,13 +153,21 @@
 }
 
 @utility surface {
-  @apply rounded-2xl border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_-12px_rgb(0_0_0/0.08)] dark:shadow-none;
+  @apply rounded-lg border bg-card;
 }
 
-@utility grid-fade {
-  background-image:
-    linear-gradient(to right, var(--border) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 40%, transparent 100%);
+/* The flyer's signature: a navy label with a cyan outline. */
+@utility brand-tag {
+  @apply inline-flex items-center border-[3px] border-cyan bg-navy px-4 py-1.5 font-display text-white uppercase tracking-tight;
+}
+
+/* Cyan bullet from the flyer: a solid dot inside a soft halo. */
+@utility cyan-dot {
+  @apply inline-block size-2.5 shrink-0 rounded-full bg-cyan ring-4 ring-cyan/20;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
