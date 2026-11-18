@@ -1,7 +1,8 @@
 // Runs the reminder engine once a minute inside the server process.
 // Set DISABLE_TICK=true if you call /api/cron/tick from an external scheduler instead.
 export async function register() {
-  if (process.env.NEXT_RUNTIME !== "nodejs" || process.env.DISABLE_TICK === "true") return;
+  // Serverless hosts (Vercel) freeze the process between requests, so use their cron instead.
+  if (process.env.NEXT_RUNTIME !== "nodejs" || process.env.DISABLE_TICK === "true" || process.env.VERCEL) return;
   const g = globalThis as unknown as { empTick?: NodeJS.Timeout };
   if (g.empTick) return;
   const { runTick } = await import("./lib/reminders");

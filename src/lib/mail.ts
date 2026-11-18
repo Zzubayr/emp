@@ -17,7 +17,12 @@ function getTransport() {
 }
 
 export const mailConfigured = () => Boolean(process.env.SMTP_HOST);
-export const appUrl = (path = "") => `${(process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "")}${path}`;
+const base = () =>
+  process.env.APP_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
+  "http://localhost:3000";
+export const appUrl = (path = "") => `${base().replace(/\/$/, "")}${path}`;
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 

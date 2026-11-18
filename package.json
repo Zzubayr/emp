@@ -4,19 +4,19 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "setup": "prisma db push && tsx prisma/seed.ts",
+    "setup": "prisma migrate deploy && tsx prisma/seed.ts",
     "tick": "tsx scripts/tick.ts",
     "postinstall": "prisma generate",
     "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "tsx --test tests/unit/*.test.ts",
-    "test:integration": "DATABASE_URL=file:./test.db sh -c \"prisma db push --skip-generate --accept-data-loss >/dev/null && tsx prisma/seed.ts >/dev/null && tsx --test tests/integration/*.test.ts\"",
-    "test:e2e": "playwright test --trace off"
+    "test:integration": "DATABASE_URL=${TEST_DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/emp_test} DIRECT_URL=${TEST_DATABASE_URL:-postgresql://postgres:postgres@localhost:5432/emp_test} sh -c \"prisma migrate deploy >/dev/null && tsx prisma/seed.ts >/dev/null && tsx --test tests/integration/*.test.ts\"",
+    "test:e2e": "playwright test --trace off",
+    "db:migrate": "prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

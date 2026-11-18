@@ -4,7 +4,7 @@ One place to run a university mentorship program: onboard cohorts, pair mentors 
 academic and non-academic tracks, book sessions, send reminders, record attendance, collect feedback
 and report on impact. Built from the *Product Plan & Design Handoff* (MVP / Phase 1 scope).
 
-Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · Prisma + SQLite · [Kokonut UI](https://kokonutui.com) and shadcn/ui components.
+Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · Prisma + PostgreSQL · [Kokonut UI](https://kokonutui.com) and shadcn/ui components.
 
 ## Quick start
 
@@ -24,7 +24,8 @@ npm run setup
 npm run dev
 ```
 
-`npm run setup` creates the database and loads demo data (two cohorts, ten tracks, 64 people, pairs,
+You need a local PostgreSQL server (the default `.env` expects `postgres:postgres@localhost:5432/emp`).
+`npm run setup` creates the tables and loads demo data (two cohorts, ten tracks, 64 people, pairs,
 sessions and feedback). Open http://localhost:3000 and sign in with a demo account. In demo mode the
 one-time code is shown on screen.
 
@@ -69,26 +70,59 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 
 | Variable | Purpose |
 | --- | --- |
-| `DATABASE_URL` | SQLite file by default. See "Going to production". |
+| `DATABASE_URL` | Database the app uses. On Supabase: the transaction pooler string (port 6543, `?pgbouncer=true`). |
+| `DIRECT_URL` | Database used for migrations. On Supabase: the session pooler string (port 5432). |
 | `APP_URL` | Public URL, used in emails and calendar files. |
-| `ADMIN_EMAIL` | First super admin created by the seed. |
+| `ADMIN_EMAIL` | First super admin: on an empty database this email can sign in. The demo seed also uses it. |
 | `SHOW_DEV_CODES` | `true` shows sign-in codes on screen. **Must be `false` in production.** |
 | `CRON_SECRET` | Secret for `/api/cron/tick` and for hashing sign-in codes. Change it. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Email delivery. Without these, emails are only written to **Settings → Email log**. |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` | Organizer account for creating Google Meet spaces. Optional. |
 | `DISABLE_TICK` | `true` turns off the in-process reminder timer (use an external cron instead). |
 
-Reminders run once a minute inside the server process. On serverless hosting, set `DISABLE_TICK=true`
-and call `GET /api/cron/tick?key=$CRON_SECRET` every minute or two from a scheduler.
+Reminders run once a minute inside the server process on a normal server. On Vercel that timer is switched
+off automatically; see "Deploying to Vercel" for scheduling.
 
-## Going to production
+## Database: Supabase
 
-- Set `SHOW_DEV_CODES=false`, a strong `CRON_SECRET`, `APP_URL` (https) and SMTP settings.
-- Start from an empty database: run `npm run db:push`, then create your first super admin
-  (the seed script creates demo data; do not run it against production).
-- SQLite suits a single server with a persistent disk. For managed hosting, change the `provider`
-  in `prisma/schema.prisma` to `postgresql`, point `DATABASE_URL` at it and run `npm run db:push`.
-- `npm run build` then `npm run start`.
+1. Create a project at [supabase.com](https://supabase.com). Keep the database password somewhere safe.
+2. In the project, click **Connect** → **ORMs** → **Prisma**. It shows two lines:
+   - `DATABASE_URL`: the **transaction pooler** (port 6543, ends in `?pgbouncer=true`). The app uses this.
+   - `DIRECT_URL`: the **session pooler** (port 5432). Migrations use this.
+   Put your database password in place of `[YOUR-PASSWORD]` in both. Use the session pooler rather than the
+   "direct connection" for `DIRECT_URL`: the direct one is IPv6-only, which Vercel and many home networks cannot reach.
+3. Paste both into your local `.env` (replacing the localhost lines) and into the hosting provider's environment
+   variables. Never commit them or share them in chat.
+4. Create the tables: `npm run db:migrate` locally, or just deploy, because `npm run build` runs the migrations.
+
+## Deploying to Vercel
+
+1. **Environment variables** (Vercel → Settings → Environment Variables, Production):
+   - `DATABASE_URL` and `DIRECT_URL`: from Supabase, as above.
+   - `ADMIN_EMAIL`: your email. On an empty database, this address can sign in and becomes the first super admin;
+     the ten starting tracks are created at the same time.
+   - `CRON_SECRET`: a long random string.
+   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`: required, because sign-in codes are emailed.
+     For example with Resend: host `smtp.resend.com`, port `465`, user `resend`, password = your API key,
+     and a `MAIL_FROM` on a domain you have verified with them.
+   - `APP_URL`: optional; defaults to the Vercel production URL.
+   - Never set `SHOW_DEV_CODES` in production.
+2. **Redeploy.** The build runs the migrations, so tables are created or updated on every deploy.
+3. **Sign in** with `ADMIN_EMAIL`, finish the short profile, then create your first cohort.
+   If email is not working yet, the code is also stored in the `EmailMessage` table (newest row for your
+   address): Supabase dashboard → Table Editor → EmailMessage.
+4. **Reminders.** `vercel.json` runs the reminder engine once a day, which is all the Hobby plan allows.
+   For reminders on time (24 hours and 1 hour before sessions), call
+   `GET https://YOUR-APP/api/cron/tick` every 5 minutes with the header `Authorization: Bearer YOUR_CRON_SECRET`,
+   from a free scheduler such as cron-job.org, or upgrade to Vercel Pro and change the schedule to `*/5 * * * *`.
+
+**Supabase's REST API is switched off for this app's tables.** Supabase normally exposes every table to
+anyone holding the public "anon" key. A migration turns on row level security with no policies and removes the
+API roles' access, so the data is only reachable through the app. The Supabase dashboard may list the tables
+as having RLS with no policies; that is intended. Do not add policies or grants unless you mean to publish data.
+
+Never run `npm run db:seed` against production: it deletes everything. It refuses to run on a non-local
+database unless `SEED_ALLOW_REMOTE=yes` is set, which is only for a throwaway demo database.
 
 ## Not built yet (from the plan)
 
@@ -112,7 +146,7 @@ npm test
 Runs three layers: unit tests for time zones, slot maths, CSV and health scoring; integration tests for the
 reminder engine against a seeded test database; and Playwright browser tests for sign-in security, access
 control, assignment (single, bulk, rank and allocate), feedback, reschedule and cancel, and safety cases.
-The browser tests use their own database (`prisma/test.db`) and never touch your data.
+The tests use their own database (`emp_test` on your local Postgres, or `TEST_DATABASE_URL`) and never touch your data.
 
 ## Project layout
 
