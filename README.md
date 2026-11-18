@@ -70,8 +70,8 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 
 | Variable | Purpose |
 | --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string. |
-| `DATABASE_URL_UNPOOLED` | Direct connection used by migrations (same as `DATABASE_URL` unless your host pools connections). |
+| `DATABASE_URL` | PostgreSQL connection string (on Supabase: the transaction pooler). Falls back to `POSTGRES_PRISMA_URL`, set by the Supabase integration. |
+| `DATABASE_URL_UNPOOLED` | Connection for migrations (on Supabase: the session pooler). Falls back to `POSTGRES_URL_NON_POOLING`. |
 | `APP_URL` | Public URL, used in emails and calendar files. |
 | `ADMIN_EMAIL` | First super admin: on an empty database this email can sign in. The demo seed also uses it. |
 | `SHOW_DEV_CODES` | `true` shows sign-in codes on screen. **Must be `false` in production.** |
@@ -83,13 +83,18 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 Reminders run once a minute inside the server process on a normal server. On Vercel that timer is switched
 off automatically; see "Deploying to Vercel" for scheduling.
 
-## Deploying to Vercel
+## Deploying to Vercel with Supabase
 
-The app needs a hosted PostgreSQL database; a file database cannot work on Vercel.
+The app needs a hosted PostgreSQL database; Supabase is the supported one.
 
-1. **Database.** In the Vercel project: Storage → Create → Neon (Postgres) → connect it to the project.
-   This sets `DATABASE_URL` and `DATABASE_URL_UNPOOLED`. (Any Postgres works; set both variables yourself,
-   using the direct, non-pooled connection string for `DATABASE_URL_UNPOOLED`.)
+1. **Connect Supabase.** In the Vercel project: Storage → Create Database → Supabase (or connect an existing
+   Supabase project from the Vercel Marketplace). This sets `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING`
+   on the project, and the app reads them automatically:
+   - the app uses the pooled connection (port 6543); `pgbouncer=true` and a one-connection limit are added for you;
+   - migrations use the session connection (port 5432), which works over Vercel's IPv4 network.
+
+   Not using the integration? Set `DATABASE_URL` to Supabase's **transaction pooler** string and
+   `DATABASE_URL_UNPOOLED` to its **session pooler** string (Supabase dashboard → Connect).
 2. **Environment variables** (Settings → Environment Variables, Production):
    - `ADMIN_EMAIL`: your email. On an empty database, this address can sign in and becomes the first super admin;
      the ten starting tracks are created at the same time.
@@ -99,14 +104,20 @@ The app needs a hosted PostgreSQL database; a file database cannot work on Verce
      and a `MAIL_FROM` on a domain you have verified with them.
    - `APP_URL`: optional; defaults to the Vercel production URL.
    - Never set `SHOW_DEV_CODES` in production.
-3. **Redeploy.** The build runs `prisma migrate deploy`, so tables are created or updated on every deploy.
+3. **Redeploy.** The build runs the migrations, so tables are created or updated on every deploy.
+   The build log shows `[db] app: … · migrations: …` with the hosts it used.
 4. **Sign in** with `ADMIN_EMAIL`, finish the short profile, then create your first cohort.
-   If email is not working yet, the code is also stored in the `EmailMessage` table (newest row for your address),
-   which you can read in the Neon console.
+   If email is not working yet, the code is also stored in the `EmailMessage` table (newest row for your
+   address): Supabase dashboard → Table Editor → EmailMessage.
 5. **Reminders.** `vercel.json` runs the reminder engine once a day, which is all the Hobby plan allows.
    For reminders on time (24 hours and 1 hour before sessions), call
    `GET https://YOUR-APP/api/cron/tick` every 5 minutes with the header `Authorization: Bearer YOUR_CRON_SECRET`,
    from a free scheduler such as cron-job.org, or upgrade to Vercel Pro and change the schedule to `*/5 * * * *`.
+
+**Supabase's REST API is switched off for this app's tables.** Supabase normally exposes every table to
+anyone holding the public "anon" key. A migration turns on row level security with no policies and removes the
+API roles' access, so the data is only reachable through the app. The Supabase dashboard may list the tables
+as having RLS with no policies; that is intended. Do not add policies or grants unless you mean to publish data.
 
 Never run `npm run db:seed` against production: it deletes everything. It refuses to run on a non-local
 database unless `SEED_ALLOW_REMOTE=yes` is set, which is only for a throwaway demo database.
