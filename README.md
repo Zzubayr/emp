@@ -70,8 +70,8 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 
 | Variable | Purpose |
 | --- | --- |
-| `DATABASE_URL` | PostgreSQL connection string (on Supabase: the transaction pooler). Falls back to `POSTGRES_PRISMA_URL`, set by the Supabase integration. |
-| `DATABASE_URL_UNPOOLED` | Connection for migrations (on Supabase: the session pooler). Falls back to `POSTGRES_URL_NON_POOLING`. |
+| `DATABASE_URL` | Database the app uses. On Supabase: the transaction pooler string (port 6543, `?pgbouncer=true`). |
+| `DIRECT_URL` | Database used for migrations. On Supabase: the session pooler string (port 5432). |
 | `APP_URL` | Public URL, used in emails and calendar files. |
 | `ADMIN_EMAIL` | First super admin: on an empty database this email can sign in. The demo seed also uses it. |
 | `SHOW_DEV_CODES` | `true` shows sign-in codes on screen. **Must be `false` in production.** |
@@ -83,19 +83,22 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 Reminders run once a minute inside the server process on a normal server. On Vercel that timer is switched
 off automatically; see "Deploying to Vercel" for scheduling.
 
-## Deploying to Vercel with Supabase
+## Database: Supabase
 
-The app needs a hosted PostgreSQL database; Supabase is the supported one.
+1. Create a project at [supabase.com](https://supabase.com). Keep the database password somewhere safe.
+2. In the project, click **Connect** → **ORMs** → **Prisma**. It shows two lines:
+   - `DATABASE_URL`: the **transaction pooler** (port 6543, ends in `?pgbouncer=true`). The app uses this.
+   - `DIRECT_URL`: the **session pooler** (port 5432). Migrations use this.
+   Put your database password in place of `[YOUR-PASSWORD]` in both. Use the session pooler rather than the
+   "direct connection" for `DIRECT_URL`: the direct one is IPv6-only, which Vercel and many home networks cannot reach.
+3. Paste both into your local `.env` (replacing the localhost lines) and into the hosting provider's environment
+   variables. Never commit them or share them in chat.
+4. Create the tables: `npm run db:migrate` locally, or just deploy, because `npm run build` runs the migrations.
 
-1. **Connect Supabase.** In the Vercel project: Storage → Create Database → Supabase (or connect an existing
-   Supabase project from the Vercel Marketplace). This sets `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING`
-   on the project, and the app reads them automatically:
-   - the app uses the pooled connection (port 6543); `pgbouncer=true` and a one-connection limit are added for you;
-   - migrations use the session connection (port 5432), which works over Vercel's IPv4 network.
+## Deploying to Vercel
 
-   Not using the integration? Set `DATABASE_URL` to Supabase's **transaction pooler** string and
-   `DATABASE_URL_UNPOOLED` to its **session pooler** string (Supabase dashboard → Connect).
-2. **Environment variables** (Settings → Environment Variables, Production):
+1. **Environment variables** (Vercel → Settings → Environment Variables, Production):
+   - `DATABASE_URL` and `DIRECT_URL`: from Supabase, as above.
    - `ADMIN_EMAIL`: your email. On an empty database, this address can sign in and becomes the first super admin;
      the ten starting tracks are created at the same time.
    - `CRON_SECRET`: a long random string.
@@ -104,12 +107,11 @@ The app needs a hosted PostgreSQL database; Supabase is the supported one.
      and a `MAIL_FROM` on a domain you have verified with them.
    - `APP_URL`: optional; defaults to the Vercel production URL.
    - Never set `SHOW_DEV_CODES` in production.
-3. **Redeploy.** The build runs the migrations, so tables are created or updated on every deploy.
-   The build log shows `[db] app: … · migrations: …` with the hosts it used.
-4. **Sign in** with `ADMIN_EMAIL`, finish the short profile, then create your first cohort.
+2. **Redeploy.** The build runs the migrations, so tables are created or updated on every deploy.
+3. **Sign in** with `ADMIN_EMAIL`, finish the short profile, then create your first cohort.
    If email is not working yet, the code is also stored in the `EmailMessage` table (newest row for your
    address): Supabase dashboard → Table Editor → EmailMessage.
-5. **Reminders.** `vercel.json` runs the reminder engine once a day, which is all the Hobby plan allows.
+4. **Reminders.** `vercel.json` runs the reminder engine once a day, which is all the Hobby plan allows.
    For reminders on time (24 hours and 1 hour before sessions), call
    `GET https://YOUR-APP/api/cron/tick` every 5 minutes with the header `Authorization: Bearer YOUR_CRON_SECRET`,
    from a free scheduler such as cron-job.org, or upgrade to Vercel Pro and change the schedule to `*/5 * * * *`.

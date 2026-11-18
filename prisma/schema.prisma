@@ -5,8 +5,9 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  // Migrations need a direct (non-pooled) connection. Neon on Vercel sets this automatically.
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  // Supabase: DATABASE_URL is the transaction pooler (port 6543), used by the app.
+  // DIRECT_URL is the session pooler or direct connection (port 5432), used for migrations.
+  directUrl = env("DIRECT_URL")
 }
 
 // Roles: MENTEE | MENTOR | COORDINATOR | ADMIN | SUPER_ADMIN

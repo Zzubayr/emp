@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 // End-to-end tests run against their own database (TEST_DATABASE_URL), migrated and reseeded on every run.
 const DATABASE_URL = process.env.TEST_DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/emp_test";
-const env = { DATABASE_URL, DATABASE_URL_UNPOOLED: DATABASE_URL, SHOW_DEV_CODES: "true", DISABLE_TICK: "true", APP_URL: "http://localhost:3100", CRON_SECRET: "test-secret" };
+const env = { DATABASE_URL, DIRECT_URL: DATABASE_URL, SHOW_DEV_CODES: "true", DISABLE_TICK: "true", APP_URL: "http://localhost:3100", CRON_SECRET: "test-secret" };
 
 export default defineConfig({
   testDir: "tests/e2e",
