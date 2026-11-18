@@ -19,7 +19,7 @@ export default async function People({ searchParams }: { searchParams: Promise<{
   const where = {
     ...(staffView ? { role: { in: ["COORDINATOR", "ADMIN", "SUPER_ADMIN"] } } : { memberships: { some: { cohortId: cohort?.id ?? "-", trackId: { in: trackFilter }, ...(sp.role === "MENTEE" || sp.role === "MENTOR" ? { role: sp.role } : {}) } } }),
     ...(sp.status ? { status: sp.status } : { status: { not: "REMOVED" } }),
-    ...(sp.q ? { OR: [{ name: { contains: sp.q } }, { email: { contains: sp.q } }, { studentId: { contains: sp.q } }] } : {}),
+    ...(sp.q ? { OR: [{ name: { contains: sp.q, mode: "insensitive" as const } }, { email: { contains: sp.q, mode: "insensitive" as const } }, { studentId: { contains: sp.q, mode: "insensitive" as const } }] } : {}),
   };
   const [rows, total] = await Promise.all([
     db.user.findMany({ where, orderBy: [{ status: "asc" }, { name: "asc" }], take: 300, include: { memberships: { where: { cohortId: cohort?.id ?? "-" }, include: { track: { select: { name: true } } } } } }),

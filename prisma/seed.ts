@@ -3,6 +3,7 @@
 import { PrismaClient } from "@prisma/client";
 import { DEFAULT_RULES } from "../src/lib/reminders";
 import { FACULTIES, INTEREST_TAGS } from "../src/lib/constants";
+import { DEFAULT_TRACKS } from "../src/lib/defaults";
 
 const db = new PrismaClient();
 let seed = 42;
@@ -16,20 +17,15 @@ const FIRST = ["Amara", "Chidi", "Fatima", "Tunde", "Ngozi", "Ibrahim", "Kemi", 
 const LAST = ["Okafor", "Bello", "Adeyemi", "Eze", "Abubakar", "Ogunleye", "Nwosu", "Lawal", "Okonkwo", "Balogun", "Ibrahim", "Adebayo", "Chukwu", "Yusuf", "Olawale", "Umeh", "Sule", "Afolabi", "Obi", "Mohammed"];
 const HEADLINES = ["Software engineer at a fintech", "Product designer", "Final-year student and class rep", "Data analyst", "Graduate assistant", "Founder of a campus startup", "HR and careers advisor", "Cybersecurity analyst", "Research fellow", "Brand and content lead"];
 
-const TRACKS = [
-  { name: "100 Level", area: "ACADEMIC", icon: "GraduationCap", mode: "SUGGEST", desc: "Settling into university: study habits, course choices and finding your feet." },
-  { name: "200 Level", area: "ACADEMIC", icon: "BookOpen", mode: "SUGGEST", desc: "Building depth in your course and planning ahead." },
-  { name: "300 Level", area: "ACADEMIC", icon: "BookOpen", mode: "SUGGEST", desc: "Internships, industrial training and specialisation." },
-  { name: "400 Level", area: "ACADEMIC", icon: "GraduationCap", mode: "ADMIN", desc: "Final-year project, graduation and what comes next." },
-  { name: "Tech", area: "NON_ACADEMIC", icon: "Code", mode: "REQUEST", desc: "Software, data, product, cybersecurity and learning to code." },
-  { name: "Design", area: "NON_ACADEMIC", icon: "Palette", mode: "PICK", desc: "UI and UX, graphic design, branding and portfolios." },
-  { name: "Life Skills", area: "NON_ACADEMIC", icon: "Leaf", mode: "REQUEST", desc: "Time management, communication, personal finance and confidence." },
-  { name: "Career and Employability", area: "NON_ACADEMIC", icon: "Briefcase", mode: "RANK", desc: "CVs, interviews, internships, LinkedIn and your first job." },
-  { name: "Entrepreneurship and Business", area: "NON_ACADEMIC", icon: "Rocket", mode: "REQUEST", desc: "Ideas, startups, side businesses and pitching." },
-  { name: "Leadership and Student Life", area: "NON_ACADEMIC", icon: "Users", mode: "REQUEST", desc: "Running clubs, teamwork, public speaking and campus involvement." },
-] as const;
+const TRACKS = DEFAULT_TRACKS;
 
 async function main() {
+  // The seed wipes every table. Refuse anything that is not a local database.
+  const url = process.env.DATABASE_URL ?? "";
+  if (!/@(localhost|127\.0\.0\.1)(:\d+)?\//.test(url) && process.env.SEED_ALLOW_REMOTE !== "yes") {
+    throw new Error("Refusing to seed: DATABASE_URL is not a local database. The seed deletes all data. Set SEED_ALLOW_REMOTE=yes only for a throwaway demo database.");
+  }
+
   for (const t of ["reminderLog", "auditLog", "emailMessage", "notification", "caseNote", "safetyCase", "attendance", "joinEvent", "feedback", "actionItem", "session", "mentorRanking", "exclusion", "match", "membership", "cohortTrack", "availabilityRule", "authSession", "otpChallenge", "consent", "track", "cohort", "user", "setting", "reminderRule"] as const) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic model access for a wipe
     await (db as any)[t].deleteMany();

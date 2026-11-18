@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { expect, type Browser, type Page } from "@playwright/test";
 
-export const db = new PrismaClient({ datasources: { db: { url: "file:./test.db" } } });
+export const db = new PrismaClient({ datasources: { db: { url: process.env.TEST_DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/emp_test" } } });
 
 /** Signs in through the real screen using the on-screen demo code. One context per person. */
 export async function signIn(browser: Browser, email: string): Promise<Page> {

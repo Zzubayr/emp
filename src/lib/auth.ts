@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { audit } from "./audit";
 import { db } from "./db";
+import { ensureDefaultTracks } from "./defaults";
 import { appUrl, sendMail } from "./mail";
 import { getSettings } from "./settings";
 
@@ -29,7 +30,13 @@ export async function requestOtp(rawEmail: string, ip: string): Promise<OtpResul
   if (mine[0] && now - mine[0].createdAt.getTime() < 60_000) return { ok: false, error: "Please wait a minute before asking for another code." };
   if (mine.length >= 6 || recent.length >= 30) return { ok: false, error: "Too many codes requested. Try again in an hour." };
 
-  const user = await db.user.findUnique({ where: { email } });
+  let user = await db.user.findUnique({ where: { email } });
+  if (!user && email === process.env.ADMIN_EMAIL?.trim().toLowerCase() && (await db.user.count()) === 0) {
+    // Fresh deployment: the configured admin email becomes the first super admin.
+    user = await db.user.create({ data: { email, name: "Programme Admin", role: "SUPER_ADMIN", status: "INVITED", source: "bootstrap" } });
+    await audit(null, "system.bootstrap_admin", email);
+    await ensureDefaultTracks();
+  }
   if (!user || !["INVITED", "ACTIVE"].includes(user.status)) {
     await db.otpChallenge.create({ data: { email, codeHash: "-", expiresAt: new Date(now), ip } });
     return { ok: true };
