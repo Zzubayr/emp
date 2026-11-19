@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { requireAdmin } from "@/lib/auth";
 import { TIMEZONES } from "@/lib/constants";
 import { db } from "@/lib/db";
-import { mailConfigured } from "@/lib/mail";
+import { mailConfigured, mailProvider } from "@/lib/mail";
 import { meetConfigured } from "@/lib/meet";
 import { ensureRules, fmtOffset } from "@/lib/reminders";
 import { getSettings, MODULE_INFO, PLANNED_MODULES } from "@/lib/settings";
@@ -120,8 +120,8 @@ export default async function Settings({ searchParams }: { searchParams: Promise
       {tab === "integrations" && (
         <div className="grid gap-6 lg:grid-cols-2">
           <Panel title={<span className="flex items-center gap-2"><Mail className="size-4" /> Email delivery</span>}>
-            <Status ok={mailConfigured()} off="Not connected. Emails, including sign-in codes, are written to the Email log only." on={`Connected to ${process.env.SMTP_HOST}. Sending as ${process.env.MAIL_FROM ?? "EMP"}.`} />
-            <p className="mt-3 text-muted-foreground text-sm">Set <code className="rounded bg-muted px-1">SMTP_HOST</code>, <code className="rounded bg-muted px-1">SMTP_PORT</code>, <code className="rounded bg-muted px-1">SMTP_USER</code>, <code className="rounded bg-muted px-1">SMTP_PASS</code> and <code className="rounded bg-muted px-1">MAIL_FROM</code> in the server environment, then restart. Use a dedicated sending domain with SPF, DKIM and DMARC.</p>
+            <Status ok={mailConfigured()} off="Not connected. Emails, including sign-in codes, are written to the Email log only." on={mailProvider() === "sendbyte" ? `Sending through SendByte as ${process.env.MAIL_FROM ?? "the default address"}.` : `Sending through SMTP (${process.env.SMTP_HOST}) as ${process.env.MAIL_FROM ?? "the default address"}.`} />
+            <p className="mt-3 text-muted-foreground text-sm">Set <code className="rounded bg-muted px-1">SENDBYTE_API_KEY</code> and <code className="rounded bg-muted px-1">MAIL_FROM</code> (an address on a domain verified in SendByte) in the server environment, then redeploy. SMTP (<code className="rounded bg-muted px-1">SMTP_HOST</code> and friends) is used only when no SendByte key is set.</p>
             <ActionButton action={sendTestEmail} className="mt-4" variant="outline">Send me a test email</ActionButton>
           </Panel>
           <Panel title={<span className="flex items-center gap-2"><Video className="size-4" /> Google Meet</span>}>
