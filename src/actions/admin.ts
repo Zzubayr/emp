@@ -228,5 +228,5 @@ export const runTickNow = safe(async () => {
 export const sendTestEmail = safe(async () => {
   const user = await admin();
   const row = await sendMail({ to: user.email, subject: "EMP test email", body: "If you can read this in your inbox, email delivery is working.", type: "test" });
-  return row.status === "SENT" ? done(`Test email sent to ${user.email}`) : row.status === "FAILED" ? fail(`Sending failed: ${row.error}`) : done("SMTP is not configured, so the email was written to the outbox only.");
+  return row.status === "SENT" ? done(`Test email sent to ${user.email}`) : row.status === "FAILED" ? fail(`Sending failed: ${row.error}`) : done("No email service is configured, so the email was written to the email log only.");
 });

@@ -1,5 +1,17 @@
+import { SendByte, SendByteError } from "@sendbyte/node";
 import nodemailer from "nodemailer";
 import { db } from "./db";
+
+// Email goes out through SendByte when SENDBYTE_API_KEY is set, otherwise through SMTP when
+// SMTP_HOST is set. With neither, messages are only written to the email log (Settings -> Email log).
+
+let sendbyte: SendByte | null | undefined;
+function getSendByte() {
+  if (sendbyte !== undefined) return sendbyte;
+  const key = process.env.SENDBYTE_API_KEY?.trim();
+  sendbyte = key ? new SendByte(key, process.env.SENDBYTE_BASE_URL ? { baseUrl: process.env.SENDBYTE_BASE_URL } : undefined) : null;
+  return sendbyte;
+}
 
 let transport: ReturnType<typeof nodemailer.createTransport> | null | undefined;
 function getTransport() {
@@ -16,7 +28,10 @@ function getTransport() {
   return transport;
 }
 
-export const mailConfigured = () => Boolean(process.env.SMTP_HOST);
+export type MailProvider = "sendbyte" | "smtp" | null;
+export const mailProvider = (): MailProvider => (process.env.SENDBYTE_API_KEY?.trim() ? "sendbyte" : process.env.SMTP_HOST ? "smtp" : null);
+export const mailConfigured = () => mailProvider() !== null;
+const fromAddress = () => process.env.MAIL_FROM || "EMSS Mentorship <no-reply@emp.local>";
 const base = () =>
   process.env.APP_URL ||
   (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "") ||
@@ -35,20 +50,33 @@ function render(subject: string, body: string, cta?: { label: string; href: stri
 }
 
 /** Sends an email if SMTP is configured; always writes it to the outbox for the admin log. */
+/** Sends an email with the configured provider and always records it in the outbox for the admin log. */
 export async function sendMail(opts: { to: string; subject: string; body: string; type: string; cta?: { label: string; href: string } }) {
-  const t = getTransport();
   const text = opts.cta ? `${opts.body}\n\n${opts.cta.label}: ${opts.cta.href}` : opts.body;
+  const html = render(opts.subject, opts.body, opts.cta);
   const row = await db.emailMessage.create({
     data: { to: opts.to, subject: opts.subject, body: text, type: opts.type, status: "LOGGED" },
   });
+
+  const sb = getSendByte();
+  if (sb) {
+    try {
+      // The SDK retries temporary failures itself; the outbox id makes those retries safe.
+      await sb.emails.send({ from: fromAddress(), to: opts.to, subject: opts.subject, html, text, tags: [opts.type], idempotency_key: `emp-${row.id}` });
+      return db.emailMessage.update({ where: { id: row.id }, data: { status: "SENT", sentAt: new Date(), attempts: 1 } });
+    } catch (e) {
+      const msg = e instanceof SendByteError ? `${e.code} (${e.status}): ${e.message}` : e instanceof Error ? e.message : String(e);
+      console.error("[mail] SendByte send failed", msg);
+      return db.emailMessage.update({ where: { id: row.id }, data: { status: "FAILED", error: msg.slice(0, 500), attempts: 1 } });
+    }
+  }
+
+  const t = getTransport();
   if (!t) return row;
   let lastError = "";
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      await t.sendMail({
-        from: process.env.MAIL_FROM || "EMP <no-reply@emp.local>",
-        to: opts.to, subject: opts.subject, text, html: render(opts.subject, opts.body, opts.cta),
-      });
+      await t.sendMail({ from: fromAddress(), to: opts.to, subject: opts.subject, text, html });
       return db.emailMessage.update({ where: { id: row.id }, data: { status: "SENT", sentAt: new Date(), attempts: attempt } });
     } catch (e) {
       lastError = e instanceof Error ? e.message : String(e);

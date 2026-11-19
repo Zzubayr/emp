@@ -76,7 +76,9 @@ Use the cohort switcher in the sidebar to work in a different cohort. Returning 
 | `ADMIN_EMAIL` | First super admin: on an empty database this email can sign in. The demo seed also uses it. |
 | `SHOW_DEV_CODES` | `true` shows sign-in codes on screen. **Must be `false` in production.** |
 | `CRON_SECRET` | Secret for `/api/cron/tick` and for hashing sign-in codes. Change it. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Email delivery. Without these, emails are only written to **Settings → Email log**. |
+| `SENDBYTE_API_KEY` | Sends email through SendByte. Keep it secret; never commit it. |
+| `MAIL_FROM` | Sender, on a domain verified with your email provider, e.g. `EMSS Mentorship <mentorship@your-domain.org>`. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Alternative to SendByte. With neither configured, emails are only written to **Settings → Email log**. |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` | Organizer account for creating Google Meet spaces. Optional. |
 | `DISABLE_TICK` | `true` turns off the in-process reminder timer (use an external cron instead). |
 
@@ -102,9 +104,10 @@ off automatically; see "Deploying to Vercel" for scheduling.
    - `ADMIN_EMAIL`: your email. On an empty database, this address can sign in and becomes the first super admin;
      the ten starting tracks are created at the same time.
    - `CRON_SECRET`: a long random string.
-   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM`: required, because sign-in codes are emailed.
-     For example with Resend: host `smtp.resend.com`, port `465`, user `resend`, password = your API key,
-     and a `MAIL_FROM` on a domain you have verified with them.
+   - `SENDBYTE_API_KEY` and `MAIL_FROM`: required, because sign-in codes are emailed. Create the key at
+     sendbyte.africa; `MAIL_FROM` must be an address on a domain you have verified there, for example
+     `EMSS Mentorship <mentorship@your-domain.org>`. (Any SMTP server also works via `SMTP_HOST`, `SMTP_PORT`,
+     `SMTP_USER`, `SMTP_PASS`; SendByte is used whenever its key is set.)
    - `APP_URL`: optional; defaults to the Vercel production URL.
    - Never set `SHOW_DEV_CODES` in production.
 2. **Redeploy.** The build runs the migrations, so tables are created or updated on every deploy.
